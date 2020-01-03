@@ -1,7 +1,7 @@
 # PCA_LDA_FDA
 Machine learning dimension reduction algorithms
 
-- PCA
+## PCA
 
 Summarizing the PCA approach
 Listed below are the 6 general steps for performing a principal component analysis, which we will investigate in the following sections.

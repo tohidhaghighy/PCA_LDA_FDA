@@ -5,20 +5,16 @@ from FDAAlgorithm import FDA
 
 url = "https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data"
 
+
+#------------------run pca --------------------------
 pca=PCA()
 df=pca.LoadFile(url)
-print(df.head(5))
+pca.PlayPCA(df)
 
-x=pca.OnlyData(df)
-print(pca.fit_transform(x))
+print(pca.pca_matrix)
 
-mean=pca.Get_Mean_Vector(df)
-print(pca.Scatter_Matrix(x,mean))
 
-covarianse=pca.CoVarianse_Matrix(x)
-eigenvec=pca.EigenValue(covarianse)
-eigenval=pca.EigenVector(covarianse)
-sortedeigenval=pca.Sort_EigenValue(eigenval,2)
-print(sortedeigenval)
+#----------------------run lda ------------------------
+lda=LDA()
+df=lda.LoadFile(url)
 
-print(pca.W_Matrix(x,eigenvec,sortedeigenval))

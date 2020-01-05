@@ -11,10 +11,14 @@ pca=PCA()
 df=pca.LoadFile(url)
 pca.PlayPCA(df)
 
-print(pca.pca_matrix)
+# pca.pca_matrix
 
 
 #----------------------run lda ------------------------
 lda=LDA()
 df=lda.LoadFile(url)
+x = df.loc[:, 0:3]
+y = df.loc[:, [4]]
+lda.Play_LDA(x,y)
 
+#lda.LDA_Matrix_list

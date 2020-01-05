@@ -37,3 +37,6 @@ class FDA:
             mean_vectors.append(x[y==c].mean().values)
         top_rank=self.predict_lda_class(X1, mean_vectors, sigma, pi_k, y)
         return top_rank
+
+    def Error_Rate(self):
+        pass

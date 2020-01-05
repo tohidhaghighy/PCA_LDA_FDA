@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 class LDA:
     def __init__(self,n_components=2):
         self.n_components=n_components
-        self.LDA_Matrix=[]
+        self.LDA_Matrix_list=[]
 
     def LoadFile(self,name):
         return pd.read_csv(name, header=None)
@@ -29,6 +29,9 @@ class LDA:
         mean_vector = self.Get_Mean_Vector(data)
         data -= mean_vector
         return data
+    # میانگین داده ها را پیدا میکند
+    def Get_Mean_Vector(self,data):
+        return data.mean().values
 
     def Mean_Vector(self,x,y):
         mean_vectors = []
@@ -77,10 +80,46 @@ class LDA:
     def LDA_Matrix(self,x,matrix_w):
         final_matrix= x.values @ matrix_w.real
         sns.scatterplot(final_matrix[:,0], final_matrix[:,1])
-        self.LDA_Matrix=final_matrix
+        self.LDA_Matrix_list=final_matrix
+
+    def Draw_Chart(self,x):
+        fig, ax = plt.subplots(1, 1)
+        sns.scatterplot(x=x[:,0], y=x[:,1], ax=ax)
+        # show chart with new data
+        plt.show()
+
 
     def Play_LDA(self,x,y):
-        pass
+        #مقادیر تکست را به عدد تبدیل میکنیم
+        y=self.Label_Encoder(y)
+        #داده ها را به مرکز میبریم
+        x=self.fit_transform(x)
+        #Find Mean Vector
+        mean_vector=self.Mean_Vector(x,y)
+        
+        #Find Scatter Matrix
+        scatter_matrix=self.Scatter_Matrix(x,y,mean_vector)
+        
+        #Find Between Scatter Matrix
+        between_scatter=self.BetweenClass_Scatter(x,y,mean_vector)
+        
+        #Find Eigen Vector
+        eigen_vec=self.EigenVector(scatter_matrix,between_scatter)
+        
+        #Find Eigen Value
+        eigen_value=self.EigenValue(scatter_matrix,between_scatter)
+        
+        #Sort Eigen Value for find Main Column
+        sorted_component=self.Component_Sort(eigen_value,2)
+        
+        #Make W Matrix
+        w_Matrix=self.W_Matrix(eigen_vec,sorted_component,x)
+        
+        #Return Final List in Lda Matrix
+        self.LDA_Matrix(x,w_Matrix)
+        # #Draw Chart
+        self.Draw_Chart(self.LDA_Matrix_list)
+        
 
     
     

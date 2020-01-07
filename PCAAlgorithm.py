@@ -8,6 +8,10 @@ class PCA:
         self.n_components=n_components
         self.pca_matrix=[]
 
+    def LoadFile_vowel(self):
+        return pd.read_csv("voweltrain.csv", header=None)
+
+
     def LoadFile(self,name):
         return pd.read_csv(name, header=None)
 

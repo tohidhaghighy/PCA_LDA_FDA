@@ -9,6 +9,9 @@ class LDA:
         self.n_components=n_components
         self.LDA_Matrix_list=[]
 
+    def LoadFile_vowel(self):
+        return pd.read_csv("voweltrain.csv", header=None)
+
     def LoadFile(self,name):
         return pd.read_csv(name, header=None)
 

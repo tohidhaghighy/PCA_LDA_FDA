@@ -1,47 +1,62 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+import seaborn as sns
+import matplotlib.pyplot as plt
 
-class FDA:
-    def __init__(self,n_components=2):
-        self.n_components=n_components
-        self.FDA_List=[]
+class LDAClassifier(LDA):
 
-    def LoadFile(self,name):
-        return pd.read_csv(name, header=None)
+    def __init__(self):
+        pass
 
-    def OnlyData(self,data):
-        x = data.loc[:, 0:3]
-        y = data.loc[:, [4]]
-        return x
+    def fit(self, x, y):
+        x = pd.DataFrame(x)
+        self.x = x.values.reshape(x.shape[1], -1)
+        self.y = y
+        self.sigma = x.cov().values
+        self.mean_vectors = []
+        self.p_list = []
+        for c in np.unique(y):
+            self.mean_vectors.append(x[y == c].mean().values)
+            self.p_list.append(np.count_nonzero(y == c) / len(y))
 
-    def get_lda_score(self,X,MU_k,SIGMA,pi_k): 
-        #Returns the value of the linear discriminant score function for a given class "k" and 
-        # a given x value X
-        print("-----------------------------")
-        print(X)
-        print(MU_k)
-        print(SIGMA)
-        print(pi_k)
-        return (np.log(pi_k) - 1/2 * (MU_k).T @ np.linalg.inv(SIGMA)@(MU_k) + X.T @ np.linalg.inv(SIGMA)@ (MU_k)).flatten()[0]
+    def predict(self, x):
+        return self.map(x, self.mean_vectors, self.sigma, self.p_list)
 
-    def predict_lda_class(self,X,MU_list,SIGMA,pi_list, y):
+    def get_lda_score(self, x, mu_k, sigma, p_k):
+        """
+        :param mu_k:
+        :param sigma:
+        :param pi_k:
+        :return: Returns the value of the linear discriminant score function for a given class "k" and a given x value X
+        """
+        return (np.log(p_k) - 1 / 2 * (mu_k).T @ np.linalg.inv(sigma) @ (mu_k) + x.T @ np.linalg.inv(sigma) @ (
+            mu_k)).flatten()[0]
+
+    def map(self, x, mu_list, sigma, p_list):
+        '''
+        :param mu_list:
+        :param sigma:
+        :param pi_list:
+        :param y:
+        :return: Returns the class for which the the linear discriminant score function is largest
+        '''
         scores_list = []
-        classes = np.unique(y)
+
+        classes = np.unique(self.y)
+
         for p in range(len(classes)):
-            score = self.get_lda_score(X.reshape(-1,1),MU_list[p].reshape(-1,1),SIGMA,pi_list[0]) 
+            score = self.get_lda_score(x.reshape(-1, 1), mu_list[p].reshape(-1, 1), sigma, p_list[p])
             scores_list.append(score)
-        self.FDA_List=scores_list
         return classes[np.argmax(scores_list)]
 
-    def PlayFDA(self,x,y):
-        X1 = x.iloc[120, :].values.reshape(2, -1)
-        pi_k = [50/len(y) for x in range(3)]
-        sigma = x.cov().values
-        mean_vectors = []
-        for c in np.unique(y):
-            mean_vectors.append(x[y==c].mean().values)
-        top_rank=self.predict_lda_class(X1, mean_vectors, sigma, pi_k, y)
-        return top_rank
+    def score(self, x, y):
+        err = 0
+        y = y.reshape(x.shape[0], -1)
+        for i in range(x.shape[0]):
+            if(self.predict(x[i,:]) != y[i]):
+                err += 1
+        err = err/x.shape[0]
+        #print(err)
+        return err
 
-    def Error_Rate(self):
-        pass

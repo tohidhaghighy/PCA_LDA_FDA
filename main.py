@@ -61,5 +61,5 @@ if __name__=="__main__":
     y = label_encoder.transform(y) + 1
     
     lda_classifier = LDAClassifier()
-    scores = cross_val_score(lda_classifier, ldalist, y, cv=5)
+    scores = cross_val_score(lda_classifier, pcalist, y, cv=5)
     print(scores.mean())
